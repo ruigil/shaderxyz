@@ -1,0 +1,84 @@
+
+#canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.full {
+    display:flex;
+    flex-direction: column;  
+    height: 100vh;
+}
+.container {
+    overflow: hidden;
+    flex: 1;
+    position: relative;                
+}
+.toolbar {
+    flex: initial;
+    width: 100%;                        
+    height: 64px;
+    display: flex;
+    justify-content: space-between;
+}
+.title {
+    display: flex; 
+    justify-content: left; 
+    align-items: center; 
+}
+.options {
+    display: flex;
+    justify-content: right;
+}
+#editor {
+    overflow: auto;
+    color: white;
+    text-shadow: rgba( 0, 0, 0, 1 ) 0px 1px 2px;
+    background-color: transparent;
+    opacity: 0.8;
+
+    position: absolute;
+    z-index: 1;
+    left: 0px; 
+    top: 0px; 
+    bottom: 0px;
+    right: 0px;
+    line-height: 1.1em;
+    font-family: monospace;
+    font-size: 16px;
+    font-weight: bold;
+
+  // transition between transparent and semi-transparent black on hover 
+    transition: background-color 500ms;
+    -webkit-transition: background-color 500ms;
+    -o-transition: background-color 500ms;
+    -moz-transition: background-color 500ms;
+    -ms-transition: background-color 500ms;
+}
+
+
+#editor:hover {
+  background-color: #003;
+}
+
+
+.errorLine {
+  position: absolute;
+  background: rgba(200, 50, 0, 0.7);
+  z-index: 20;   
+}
+ 
+.errorSignal {
+  margin-left: 2px;
+  color: white;
+  background-image: url('/assets/bug.png');
+}
+
+.form-elements {
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+}
+.tab-icon {
+  margin-right: 8px;
+}

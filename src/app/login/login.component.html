@@ -1,0 +1,9 @@
+<div class="login">
+    <button mat-icon-button routerLink='/'>
+        <mat-icon color="accent">home</mat-icon>
+    </button>
+
+    <ngx-auth-firebaseui  [tabIndex]="1" [guestEnabled]="true" (onSuccess)="loggedIn($event)" (OnError)="authError()"> </ngx-auth-firebaseui>
+
+
+</div>

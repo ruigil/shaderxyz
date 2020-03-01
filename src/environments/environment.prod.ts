@@ -1,3 +1,14 @@
+
 export const environment = {
-  production: true
+    production: true,
+    // configure this with your own credentials
+    firebase: {
+        apiKey: "",
+        authDomain: "",
+        databaseURL: "",
+        projectId: "",
+        storageBucket: "",
+        messagingSenderId: "",
+        appId: ""
+    } 
 };

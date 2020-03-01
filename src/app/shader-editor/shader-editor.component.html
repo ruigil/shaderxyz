@@ -1,0 +1,76 @@
+<div class="full">
+    <mat-toolbar color="primary" class="toolbar">
+        <div class="title">
+        <button mat-icon-button routerLink='/'>
+        <mat-icon matTooltip="Home">home</mat-icon>
+        </button>
+        <span>{{shader.title}} : {{fps | async}} fps</span>
+        </div>
+        <div class="options">
+            <button mat-icon-button matTooltip="Play/Pause" (click)="togglePlay()"> 
+                <mat-icon aria-label="save">{{shader.animate ? 'pause' : 'play_arrow'}}</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Fullscreen" (click)="fullScreen()">
+                <mat-icon aria-label="save">fullscreen</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="{{resolution}}" [matMenuTriggerFor]="menuScale">
+                <mat-icon>filter_{{shader.scale}}</mat-icon>
+            </button>
+            <mat-menu #menuScale="matMenu" >
+            <button mat-menu-item (click)="setScale(1)">
+                <mat-icon>filter_1</mat-icon>
+                <span>Full</span>
+            </button>
+            <button mat-menu-item (click)="setScale(2)">
+                <mat-icon>filter_2</mat-icon>
+                <span>Half</span>
+            </button>
+            <button mat-menu-item (click)="setScale(4)">
+                <mat-icon>filter_4</mat-icon>
+                <span>quarter</span>
+            </button>
+            <button mat-menu-item (click)="setScale(8)">
+                <mat-icon>filter_8</mat-icon>
+                <span>Eight</span>
+            </button>
+            </mat-menu> 
+            <mat-divider [vertical]="true"></mat-divider>
+            <button *ngIf="!viewMode" mat-icon-button matTooltip="Save" [disabled]="!dirty" (click)="save()">
+            <mat-icon aria-label="save">save</mat-icon>
+            </button>
+            <button *ngIf="!viewMode" mat-icon-button matTooltip="Errors" (click)="showErrors()">
+            <mat-icon aria-label="save" matBadge="{{errors.length}}" matBadgeColor="accent">{{ errors.length > 0 ? 'bug_report' : 'check'}}</mat-icon> 
+            </button>
+            <button mat-icon-button matTooltip="Toggle Code View" (click)="toggleCode()" (keydown.control.y)="toggleCode()">
+            <mat-icon aria-label="save">{{showCode ? 'visibility' : 'visibility_off'}}</mat-icon>
+            </button>
+            <button *ngIf="viewMode" mat-icon-button matTooltip="Fork" (click)="fork()">
+            <mat-icon aria-label="fork">call_split</mat-icon>
+            </button>
+            <button *ngIf="!viewMode" mat-icon-button matTooltip="Properties" (click)="showProperties()">
+            <mat-icon aria-label="save">description</mat-icon>
+            </button>
+            <button *ngIf="!viewMode" mat-icon-button matTooltip="User" (click)="showUser()">
+                <mat-icon>person</mat-icon>
+            </button>
+        </div>
+    </mat-toolbar> 
+
+    <nav mat-tab-nav-bar [backgroundColor]="'accent'">
+        <a mat-tab-link *ngFor="let tab of tabs; let i = index;" [active]="tab.active" (click)="activeTab(i,tab.buffer)">
+            <mat-icon class="tab-icon">{{tab.icon}}</mat-icon>{{tab.name}}
+        </a>
+    </nav>
+    <div #container class="container">
+        <canvas #canvas id="canvas"></canvas>
+        <ace-editor *ngIf="showCode" #editor id="editor"
+            [(text)]="shader.source[shader.edit]" 
+            [mode]="'glsl'"
+            [theme]="'chaos'"
+            [options]="options"
+            [readOnly]="viewMode"
+            [autoUpdateContent]="true"
+            [durationBeforeCallback]="1000"
+            (textChanged)="onChange($event)"> </ace-editor>
+    </div>
+</div>

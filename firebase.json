@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "dist/shaderxyz",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}

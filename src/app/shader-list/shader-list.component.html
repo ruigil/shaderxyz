@@ -1,0 +1,28 @@
+<div class="list">
+    <button mat-icon-button routerLink='/'>
+        <mat-icon color="accent">home</mat-icon>
+    </button>
+    <div class="shaders">
+    <mat-card class="shader-card" *ngFor="let shader of shader$ | async">
+        <mat-card-header>
+            <div *ngIf="shader.photoURL" mat-card-avatar [ngStyle]="{'background-image': 'url('+shader.photoURL+')' , 'background-size': 'cover' }" ></div>
+            <div *ngIf="!shader.photoURL" mat-card-avatar class="avatar"><mat-icon class="anonymous">person</mat-icon></div>
+            <mat-card-title> {{shader.title}}</mat-card-title>  
+            <mat-card-subtitle>{{shader.author || "Anonymous"}}</mat-card-subtitle>
+        </mat-card-header>
+        <img mat-card-image src="{{shader.screenshot}}" alt="{{shader.title}}">
+        <mat-card-content>
+            <p>{{shader.description}}</p>
+            <mat-chip-list><mat-chip *ngFor="let tag of shader.tags">{{tag}}</mat-chip></mat-chip-list>
+        </mat-card-content>        
+        <mat-card-actions >
+            <button *ngIf="shader.uid === (user ? user.uid : '' )" mat-button routerLink="/xyz/editor/{{shader.id}}">EDIT</button>
+            <button *ngIf="shader.uid === (user ? user.uid : '' )" mat-button (click)="delete(shader)">DELETE</button>
+            <!--
+            <button mat-button (click)="delete(shader)">DELETE</button>
+            -->
+            <button *ngIf="shader.uid !== (user ? user.uid : '' )" mat-button routerLink="/xyz/view/{{shader.id}}">VIEW</button> 
+        </mat-card-actions>
+    </mat-card>
+    </div>
+<div>

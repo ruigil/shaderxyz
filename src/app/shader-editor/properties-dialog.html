@@ -1,0 +1,58 @@
+<h2 mat-dialog-title>Properties</h2>
+<mat-dialog-content class="mat-typography">
+    <div class="form-elements">
+        <mat-form-field>
+            <mat-label>Title</mat-label>
+            <input matInput  [(ngModel)]="shader.title" placeholder="Title..." required autofocus>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Description</mat-label>
+            <textarea matInput [(ngModel)]="shader.description" placeHolder="Description..." rows="7" ></textarea>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Resolution</mat-label>
+            <mat-select placeHolder="Scale" [(ngModel)]="shader.scale"> 
+                <mat-option [value]=1>Full</mat-option>
+                <mat-option [value]=2>Half</mat-option>
+                <mat-option [value]=4>Quarter</mat-option>
+                <mat-option [value]=8>Eight</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-slide-toggle [(ngModel)]="shader.animate" >Animate {{ shader.animate ? " ON" : " OFF"}}</mat-slide-toggle>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>Inputs</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <mat-list>
+                <mat-list-item >
+                    <mat-icon matListIcon>inputs</mat-icon>
+                    <mat-slide-toggle [color]="'accent'" [(ngModel)]="shader.inputs.video">Webcam </mat-slide-toggle>
+                </mat-list-item>
+                <mat-list-item>
+                    <mat-icon matListIcon>inputs</mat-icon>
+                    <mat-slide-toggle [color]="'accent'" [(ngModel)]="shader.inputs.audio">Micro </mat-slide-toggle>
+                </mat-list-item>
+            </mat-list>
+
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>Buffers</mat-panel-title>
+            </mat-expansion-panel-header>
+            <mat-list>
+                <mat-list-item>
+                    <mat-icon matListIcon>music_video</mat-icon>
+                    <mat-slide-toggle [color]="'accent'" [(ngModel)]="shader.buffers.audio">Audio </mat-slide-toggle>
+                </mat-list-item>
+                <mat-list-item>
+                    <mat-icon matListIcon>video_label</mat-icon>
+                    <mat-slide-toggle [color]="'accent'" [(ngModel)]="shader.buffers.state">State </mat-slide-toggle>
+                </mat-list-item>
+            </mat-list>
+        </mat-expansion-panel>
+    </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button [mat-dialog-close]="true" cdkFocusInitial>OK</button>
+</mat-dialog-actions>
