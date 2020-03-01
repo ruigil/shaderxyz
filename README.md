@@ -1,6 +1,6 @@
 # ShaderXYZ
 
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/ruigil/oos) 
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/ruigil/shaderxyz) 
 
 
 This project is a simple WebGL Shader Editor, built with Angular and Firebase.
@@ -8,7 +8,7 @@ It has webcam, micro and TensorflowJS Deep Learning Model as input, and also aud
 The goal is a simple, fast whiteboard for creative code with GLSL.
 Sketches can easily be embebed in personal sites.
 
-You can clone this repo easily with [Gitpod](https://gitpod.io/#https://github.com/ruigil/oos), 
+You can clone this repo easily with [Gitpod](https://gitpod.io/#https://github.com/ruigil/shaderxyz), 
 but you must supply your own Firebase credentials in the `environment.ts` files.
 
 ## Development server
