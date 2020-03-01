@@ -8,7 +8,7 @@ It has webcam, micro and TensorflowJS Deep Learning Model as input, and also aud
 The goal is a simple, fast whiteboard for creative code with GLSL.
 Sketches can easily be embebed in personal sites.
 
-You can clone this repo easily with [Gitpod]((https://gitpod.io/#https://github.com/ruigil/oos)), 
+You can clone this repo easily with [Gitpod](https://gitpod.io/#https://github.com/ruigil/oos), 
 but you must supply your own Firebase credentials in the `environment.ts` files.
 
 ## Development server
