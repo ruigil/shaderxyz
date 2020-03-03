@@ -6,7 +6,7 @@
     "start": "ng serve --port 8080 --disable-host-check",
     "build": "ng build",
     "dist": "ng build --prod",
-    "update": "ng update --all",
+    "update": "ng update --all --force",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
