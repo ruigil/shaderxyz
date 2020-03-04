@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, fromEvent, combineLatest, BehaviorSubject, interval, Subscription } from "rxjs";
-import { take, debounceTime, throttleTime, pairwise, map, filter, skip } from "rxjs/operators"; 
-import * as bodyPix from '@tensorflow-models/body-pix';
+import { take, debounceTime, throttleTime, pairwise, map, filter, skip } from "rxjs/operators";
 import { Shader } from "./shader";
 
 import { SXYZContext } from './webgl/SXYZContext';
@@ -13,14 +12,14 @@ import { SXYZDraw } from './webgl/SXYZDraw';
 
 class Timer {
     static st:number = 0;
-    
+
     static start = () => Timer.st = Date.now();
     static reset = () => Timer.st = 0;
-    static elapsed = () => Date.now() - Timer.st; 
+    static elapsed = () => Date.now() - Timer.st;
 }
 
 const defaultProgram:any = {
-    vs: 
+    vs:
 `#version 300 es
 
 precision highp float;
@@ -34,11 +33,11 @@ out vec2 ref;
 
 void main() {
     gl_Position = position;
-    tex = (position.xy + vec2(1.)) * vec2(.5); 
+    tex = (position.xy + vec2(1.)) * vec2(.5);
     ref = (position.xy *  resolution.xy ) / resolution.y ; // aspect ratio
 }`,
-    
-    fs: 
+
+    fs:
 `
 
 /*
@@ -53,12 +52,12 @@ void main() {
         sampler2D audio: if micro active 512x512 texture with the spectrogram of the microphone
         sampler2D state: if state buffer, than screen resolution float texture, with the state buffer computation
     }
-    
+
 */
 
 out vec4 oPixel;
 
-void main() { 
+void main() {
     oPixel = vec4( abs(ref.x), abs(ref.y),  smoothstep( .01,.0, length(ref)-((1.+sin(mod(ftime,6.28)))*.5)-.1), 1. );
 }`,
 
@@ -105,7 +104,7 @@ void main() {
 }
 
 @Injectable({
-  providedIn: 'root' 
+  providedIn: 'root'
 })
 export class OGLService {
     resolution: Float32Array = new Float32Array( [0.0,0.0] );
@@ -130,11 +129,11 @@ export class OGLService {
     frame: number = 0;
 
     webcam: any;
-    spectro: any; 
+    spectro: any;
     spectroData: Uint8Array = new Uint8Array(512*512*4);
-    video: any; 
+    video: any;
     analyser: any;
-    fftData: Uint8Array; 
+    fftData: Uint8Array;
     animation: any;
     canvas: any;
     hasVideo: boolean = false;
@@ -143,9 +142,9 @@ export class OGLService {
     sound: SXYZTexture;
     audioContext: any;
 
-    errorsSubject = new BehaviorSubject({ errors: [], padding: 0}); 
+    errorsSubject = new BehaviorSubject({ errors: [], padding: 0});
     shader: Shader;
-    
+
     context: SXYZContext;
     draw: Array<SXYZDraw> = [];
     offscreen: SXYZFramebuffer;
@@ -178,17 +177,17 @@ export class OGLService {
         this.draw[2] = new SXYZDraw(this.context);
         //this.net = await bodyPix.load(/** optional arguments, see below **/);
 
-        
-        //this.draw.program(this.context.createProgram(defaultProgram)) 
-        //.texture("video",this.webcam) 
+
+        //this.draw.program(this.context.createProgram(defaultProgram))
+        //.texture("video",this.webcam)
         //.texture("audio",this.spectro);
-        
+
         fromEvent(window, 'deviceorientation').subscribe( (e:Event) => {
-            //console.log(e);  
+            //console.log(e);
             /**
-            alpha - 
+            alpha -
             beta -
-            gamma - 
+            gamma -
              */
         });
 
@@ -197,37 +196,37 @@ export class OGLService {
         });
 
         fromEvent(canvas, 'mousemove').subscribe( (e:MouseEvent) => {
-            this.mouse[0] = e.clientX / this.resolution[0]; 
-            this.mouse[1] = e.clientY / -this.resolution[1]; 
+            this.mouse[0] = e.clientX / this.resolution[0];
+            this.mouse[1] = e.clientY / -this.resolution[1];
             this.draw.forEach( d => d.uniform("mouse", this.mouse ));
         });
 
         fromEvent(window, 'resize').pipe( debounceTime(1000) ).subscribe( (e:Event) => {
             this.width = canvas.clientWidth;
             this.height = canvas.clientHeight;
-            this.initFramebuffers(this.shader,this.width / this.shader.scale, this.height / this.shader.scale); 
-            this.setScale(this.shader.scale); 
+            this.initFramebuffers(this.shader,this.width / this.shader.scale, this.height / this.shader.scale);
+            this.setScale(this.shader.scale);
             if (!this.shader.animate) this.render();
         });
 
         // video
         shader.pipe( filter((s:Shader) => navigator.mediaDevices && navigator.mediaDevices.getUserMedia && s.inputs.video && !this.hasVideo ))
         .subscribe( s => {
-            this.video = document.createElement("video"); 
-            this.video.width = 640; 
+            this.video = document.createElement("video");
+            this.video.width = 640;
             this.video.height = 480;
             this.video.style.cssText = "-moz-transform: scale(-1, -1); -webkit-transform: scale(-1, -1); -o-transform: scale(-1, -1); transform: scale(-1, -1);";
             this.webcam = this.context.createTexture("video", 640, 480);
             this.draw.forEach( d => d.texture("video",this.webcam));
-            navigator.mediaDevices.getUserMedia({video: {width: {exact: 640}, height: {exact: 480}}} ).then( stream => { 
-                this.video.srcObject = stream; 
-                this.video.play();    
+            navigator.mediaDevices.getUserMedia({video: {width: {exact: 640}, height: {exact: 480}}} ).then( stream => {
+                this.video.srcObject = stream;
+                this.video.play();
             });
             combineLatest(fromEvent(this.video,"playing"),fromEvent(this.video,"timeupdate"))
             .pipe(take(1)).subscribe( ([p,t]) => { this.hasVideo = true; });
         });
 
-        // audio 
+        // audio
         shader.pipe(filter((s:Shader) => navigator.mediaDevices && navigator.mediaDevices.getUserMedia && s.inputs.audio && !this.hasAudio ))
         .subscribe( (s:Shader) => {
             navigator.mediaDevices.getUserMedia({ audio: true }).then( stream => {
@@ -238,11 +237,11 @@ export class OGLService {
                 this.analyser.fftSize = 1024;
                 this.fftData = new Uint8Array(512);
                 this.spectro = this.context.createTexture("audio", 512, 512);
-                this.draw.forEach( d => d.texture("audio",this.spectro)); 
+                this.draw.forEach( d => d.texture("audio",this.spectro));
                 this.hasAudio = true;
             });
         });
-        
+
         // audio output generation
         shader.pipe(filter((s:Shader) => s.buffers.audio && s.animate))
         .subscribe( (s:Shader) => {
@@ -250,24 +249,24 @@ export class OGLService {
             console.log("generate audio")
             this.audioContext =  new (window['AudioContext'] || window['webkitAudioContext'])();
             const bufferSize = 200*240;//this.audioContext.sampleRate * 2; // 60 seconds only...
-            
+
             if (this.sound) this.sound.destroy();
             if (this.audioFram) this.audioFram.destroy();
             this.sound = this.context.createTexture("sound", 200, 240, { internalFormat: this.context.gl.RG32F, format: this.context.gl.RG, type: this.context.gl.FLOAT } );
-            this.audioFram = this.context.createFrameBuffer( [ this.sound ] ); 
+            this.audioFram = this.context.createFrameBuffer( [ this.sound ] );
             this.draw[2]
                 .framebuffer(this.audioFram)
-                .program(this.context.createProgram({ vs: defaultProgram.vs, fs: this.io.join("\n") + s.source[2] }) ) 
+                .program(this.context.createProgram({ vs: defaultProgram.vs, fs: this.io.join("\n") + s.source[2] }) )
                 .uniform("sampleRate", this.audioContext.sampleRate)
                 .uniform("resolution", new Float32Array([200,240]) )
                 .draw();
 
             console.log("sample rate ", this.audioContext.sampleRate);
-            console.log("buffersize x2 channels", bufferSize * 2); 
+            console.log("buffersize x2 channels", bufferSize * 2);
             let audioBuffer = this.audioContext.createBuffer(2, bufferSize, this.audioContext.sampleRate);
             let audioData = this.audioFram.readPixels(2); // 2 channels stereo
             console.log(audioData);
-            let canal0 = audioBuffer.getChannelData(0); 
+            let canal0 = audioBuffer.getChannelData(0);
             let canal1 = audioBuffer.getChannelData(1);
             console.log("*generate audio*");
             for (var i = 0; i < bufferSize; i++) {
@@ -281,7 +280,7 @@ export class OGLService {
                 //canal1[i] = Math.sin( (261. / this.audioContext.sampleRate) * 2.*3.1415 * i);
                 canal0[i] = audioData[i*2];
                 canal1[i] = audioData[i*2 + 1];
-            }                
+            }
             console.log("*generated...*");
 
             this.soundnode = this.audioContext.createBufferSource();
@@ -304,7 +303,7 @@ export class OGLService {
                 this.shader = {...s}; // shallow copy one level
                 this.shader.inputs = {...s.inputs};
                 this.shader.buffers = {...s.buffers};
-                this.initFramebuffers( s, this.width / s.scale, this.height / s.scale ); 
+                this.initFramebuffers( s, this.width / s.scale, this.height / s.scale );
                 this.draw.forEach( (d,i) => d.program(this.context.createProgram({ vs: defaultProgram.vs, fs: prefix.join("\n") + s.source[i] }) ));
                 this.setScale(s.scale);
             }
@@ -321,11 +320,11 @@ export class OGLService {
                 this.shader.scale = s.scale;
                 //this.initFramebuffers(this.shader, this.width / this.shader.scale, this.height / this.shader.scale);
                 //this.draw.forEach( (d,i) => d.program(this.context.createProgram({ vs: defaultProgram.vs, fs: prefix.join("\n") + s.source[i] }) ));
-                this.initFramebuffers( s, this.width / s.scale, this.height / s.scale);  
+                this.initFramebuffers( s, this.width / s.scale, this.height / s.scale);
                 this.setScale(s.scale);
             }
 
-            // rethink the whole process of change management            
+            // rethink the whole process of change management
             if (this.shader.buffers.state != s.buffers.state) {
                 console.log("init state buffer");
                 this.initFramebuffers( s, this.width , this.height );
@@ -346,7 +345,7 @@ export class OGLService {
                 Timer.start();
                 this.render();
             }
-        }); 
+        });
 
 
    }
@@ -354,11 +353,11 @@ export class OGLService {
    setScale(scale:number) {
         this.context.gl.canvas.width = this.width / scale;
         this.context.gl.canvas.height = this.height / scale;
-        this.resolution[0] = this.width / scale; 
-        this.resolution[1] = this.height / scale;  
+        this.resolution[0] = this.width / scale;
+        this.resolution[1] = this.height / scale;
         this.draw.forEach(d => d.uniform("resolution", this.resolution));
    }
-    
+
     async predict() {
 
     /**
@@ -374,41 +373,41 @@ export class OGLService {
     }
 
     private initFramebuffers(shader, width, height) {
-        const floatTexture = { internalFormat: this.context.gl.RGBA32F, format: this.context.gl.RGBA, type: this.context.gl.FLOAT };  
-            
+        const floatTexture = { internalFormat: this.context.gl.RGBA32F, format: this.context.gl.RGBA, type: this.context.gl.FLOAT };
+
         console.log(`resolution initframe ${width} ${height}`);
         if (this.prev) this.prev.destroy();
         if (this.next) this.next.destroy();
 
         if (this.offscreen) this.offscreen.destroy();
-        if (this.rFrameBuf) this.rFrameBuf.destroy(); 
+        if (this.rFrameBuf) this.rFrameBuf.destroy();
         if (this.wFrameBuf) this.wFrameBuf.destroy();
 
         if (shader.buffers.state) {
-            this.prev = this.context.createTexture("previous", width, height, floatTexture ); 
-            this.next = this.context.createTexture("nextstate", width, height, floatTexture ); 
-            this.wFrameBuf = this.context.createFrameBuffer( [ this.next ] ); 
+            this.prev = this.context.createTexture("previous", width, height, floatTexture );
+            this.next = this.context.createTexture("nextstate", width, height, floatTexture );
+            this.wFrameBuf = this.context.createFrameBuffer( [ this.next ] );
             this.rFrameBuf = this.context.createFrameBuffer( [ this.prev ] );
             this.draw.forEach( d => d.texture("state", this.prev));
             this.draw[1].framebuffer(this.wFrameBuf);
         }
 
-        this.offscreen = this.context.createFrameBuffer( [ this.context.createTexture("offscreen", width, height) ] ); 
+        this.offscreen = this.context.createFrameBuffer( [ this.context.createTexture("offscreen", width, height) ] );
         this.draw[0].framebuffer(this.offscreen);
     }
 
     private updateSpectro() {
         if (this.analyser) {
             this.spectroData.copyWithin(512*4,0,511*4*512);
-            this.analyser.getByteFrequencyData(this.fftData); 
+            this.analyser.getByteFrequencyData(this.fftData);
             for (let i=0; i<512; i++) this.spectroData[i*4] = this.fftData[511-i%512];
         }
         return this.spectroData;
-    }    
+    }
 
     private render() {
 
-        if (this.hasVideo) this.webcam.data(Promise.resolve(this.video)); 
+        if (this.hasVideo) this.webcam.data(Promise.resolve(this.video));
 
         if (this.hasAudio) this.spectro.data(Promise.resolve(this.updateSpectro()), 512, 512);
 
@@ -428,25 +427,24 @@ export class OGLService {
             this.context.copyFramebuffer(this.offscreen,null);
 
 
-            if (this.shader.animate) this.animation = requestAnimationFrame( this.render.bind(this) ); 
+            if (this.shader.animate) this.animation = requestAnimationFrame( this.render.bind(this) );
         }
 
     }
 
     defaultProgram() { return defaultProgram; }
- 
-    compileErrors(): Observable<any> { 
+
+    compileErrors(): Observable<any> {
         return this.errorsSubject.asObservable();
     }
 
-    fps(): Observable<any> {  
-        return interval(1000).pipe( map( t => this.frame ), pairwise(), map( p => p[1] - p[0] ), filter( n => n >= 0) ) 
+    fps(): Observable<any> {
+        return interval(1000).pipe( map( t => this.frame ), pairwise(), map( p => p[1] - p[0] ), filter( n => n >= 0) )
     }
 
-    ngDestroy() { 
+    ngDestroy() {
         this.draw.forEach( d => d.destroy() );
     }
 
 
 }
- 

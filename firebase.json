@@ -1,10 +1,16 @@
 {
   "hosting": {
-    "public": "dist/shaderxyz",
+    "public": "/dist/shaderxyz",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ]
+  },
+  "functions": {
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint",
+      "npm --prefix \"$RESOURCE_DIR\" run build"
     ]
   }
 }

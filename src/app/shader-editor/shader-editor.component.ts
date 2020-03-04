@@ -18,7 +18,7 @@ export class ShaderEditorComponent implements OnInit, AfterViewInit {
 
     @ViewChild("canvas",{static:true}) public canvas: ElementRef;
     @ViewChild("container",{static:true}) public container: ElementRef;
-    @ViewChild("editor",{static:false}) public editor: any;
+    @ViewChild("editor") public editor: any;
 
     options:any = { printMargin: false };
 

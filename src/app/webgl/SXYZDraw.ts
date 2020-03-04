@@ -5,7 +5,7 @@ import { SXYZTexture } from "./SXYZTexture";
 
 export class SXYZDraw {
     context: SXYZContext;
-    gl: WebGL2RenderingContext;
+    gl: any;//WebGL2RenderingContext;
     fbuffer: SXYZFramebuffer = null;
     prog: SXYZProgram;
     uniforms: Object = {};
@@ -31,7 +31,7 @@ export class SXYZDraw {
     uniform( name: string, value: any) {
         this.uniforms[name] = value;
         if (this.prog) this.prog.uniform(name,value);
-        return this; 
+        return this;
     }
 
     texture( name: string, value: SXYZTexture) {
@@ -46,10 +46,10 @@ export class SXYZDraw {
         this.gl.viewport(0, 0, this.fbuffer.width(), this.fbuffer.height());
 
         this.fbuffer.clear();
- 
-        this.prog.draw(); 
+
+        this.prog.draw();
     }
-    
+
     destroy() {
         this.fbuffer.destroy();
         this.prog.destroy();
